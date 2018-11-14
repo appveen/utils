@@ -1,25 +1,25 @@
 {
-  "name": "cuti",
-  "version": "0.0.4",
-  "description": "Capiot UTIlities",
+  "name": "@appveen/utils",
+  "version": "1.0.0",
+  "description": "appveen utils library",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/capiotsoftware/cuti.git"
+    "url": "https://github.com/appveen/utils.git"
   },
   "author": "Abilash Mohan <abilash@capiot.com>",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/capiotsoftware/cuti/issues"
+    "url": "https://github.com/appveen/utils/issues"
   },
-  "homepage": "https://github.com/capiotsoftware/cuti",
+  "homepage": "https://github.com/appveen/utils.git#readme",
   "dependencies": {
     "eslint": "^4.15.0",
     "log4js": "^2.4.1",
-    "puttu-redis": "git+https://github.com/capiotsoftware/puttu-redis.git",
+    "puttu-redis": "git+https://github.com/appveen/puttu-redis.git",
     "jsonwebtoken": "^8.1.0",
     "request": "^2.83.0"
   }

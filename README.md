@@ -1,4 +1,4 @@
-# cuti
+# utils
 This library contains various utility modules to ease development work.
 
 1. __counter__: Module to generate unique ID.
