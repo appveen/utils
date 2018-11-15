@@ -19,7 +19,6 @@
   "dependencies": {
     "eslint": "^4.15.0",
     "log4js": "^3.0.6",
-    "puttu-redis": "git+https://github.com/appveen/puttu-redis.git",
     "jsonwebtoken": "^8.1.0",
     "request": "^2.83.0"
   }

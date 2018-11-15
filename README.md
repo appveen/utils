@@ -15,30 +15,4 @@ This library contains various utility modules to ease development work.
     2. __moveToES:__ move a document to elastic search server. Takes one arg: doc
     3. __moveAll:__ move all deleted document to elastic search. Takes two args: req, res
 5. __rand:__ returns a random integer. Takes one arg: length of integer.
-6. __logger:__ returns a log4j object compatible with aou crud library.
-7. __Request:__ 
-    1. __init:__ initialize object by setting hostMasterName.(Optional)
-    2. __getOptions:__ returns options object required to make http request. takes four args: 1. url 2. method 3. path 4. magicKey
-    3. __getUrlandMagicKey:__ returns options object required to make http request. Takes one arg masterName. Using this masterName it will fetch url and magic key from redis server. Options will also contain hostname, port, path, method:GET, headers['masterName', 'magicKey', 'sourceMagicKey']
-    4. __validateSource:__ validate the magicKey of a masterName. Takes two args masterName, magicKey
-    5. __getSourceHeader:__ returns sourceHeader which is concatination of masterName,#,magicKey. Takes one arg: masterName
-    6. __checkIfExists:__ checks if the id provided exist in a service or not. Takes two args masterKey and id
-    7. __getElement:__ returns data with only selected fields. Takes three args: masterName, id, select: comma separated select fields.
-8. __StateEngine:__ Module to manage state transitions. Constructor takes two args: stateTransitionList, startState. stateTransitionList should be an array of array. Eg: var states = ["Submitted", "Partial Approval", "Approved"];
-var stateTransitionList = [
-    [states[0], states[1]],
-    [states[1], states[0]],
-    [states[0], states[2]],
-    [states[2], states[0]]
-];
-    1. __registerNewState:__ adds new state transition. Takes two args: source, target.
-    2. __removeState:__ removes existing state transition. Takes two args: source, target.
-    3. __transition:__ Make transition from current state to given state, if valid. Takes one args: toState.
-9. __Validation:__ 
-    1. __init:__ Initialize method. Takes four args: masterName ,crudderObject, puttuObject, fieldName.
-    1. __validationGet:__ an express middleware to authorize all GET requests. To check for authrization this middleware makes a POST request to user_Management with url /user/v1/permissionsGet.
-    2. __validationPost:__ an express middleware to authorize all POST requests. To check for authrization this middleware makes a POST request to user_Management with url /user/v1/permissionsPost. 
-    3. __validationPut:__ an express middleware to authorize all PUT requests. To check for authrization this middleware makes a POST request to user_Management with url /user/v1/permissionsPost.
-    4. __stateValidationPut:__ an express middleware to authorize PUT request and validate the state transition. To check for authrization this middleware makes a POST request to user_Management with url /user/v1/permissionsPost.
-    5. __stateTransition:__ an express middleware to authorize all POST request and validate the state transition. To check for authrization this middleware makes a POST request to user_Management with url /user/v1/permissionsPost.
-    6. __onlyTrustedAccess:__ an express middleware to validate the magickey in the request. 
+6. __logger:__ returns a log4j object compatible with aou crud library. 
