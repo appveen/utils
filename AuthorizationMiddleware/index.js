@@ -1,26 +1,5 @@
 const request = require("request");
 
-function validateRequest(_req, permissions) {
-    try {
-        let user = _req.user,
-            method = _req.method,
-            url = _req.path;
-        if (!user) return false;
-        var valid = false;
-        Object.keys(permissions).forEach(key => {
-            if (user.entitlements[key]) {
-                permissions[key].forEach(el => {
-                    if (el.method === method && url.indexOf(el.url) >= 0) valid = true;
-                });
-            }
-        })
-        return valid;
-    } catch (e) {
-        console.error(e);
-        return false;
-    }
-}
-
 function isUrlPermitted(permittedUrls, originalUrl) {
     let permitted = false;
     if (!permittedUrls) return false;
