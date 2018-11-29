@@ -1,10 +1,20 @@
 const bluebird = require("bluebird");
 const redis = require("redis");
 bluebird.promisifyAll(redis);
-const client = redis.createClient();
+let host = process.env.REDIS_HOST;
+let port = process.env.REDIS_PORT;
+const client = redis.createClient(port, host);
 const logger = global.logger;
 
 let e = {};
+
+client.on('error', function(err){
+  logger.error(err.message);
+})
+
+client.on('connect', function() {
+  logger.info('Redis client connected');
+});
 
 function calculateExpirySeconds(expiry){
   return (Date.now() - expiry)/1000;
