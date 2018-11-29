@@ -10,13 +10,17 @@ e.uuid = (a) => {
   return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,e.uuid)
 }
 
-e.addToken = (_token, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
+e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   logger.debug("Inside ::  addToken()");
   logger.debug(`token :: ${_token}`);
+  logger.debug(`default :: ${_default}`);
   logger.debug(`uuidOfUI :: ${_uuidOfUI}`);
   logger.debug(`expiry :: ${_expiry}`);
   logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return client.saddAsync("t:"+_token, _uuidOfUI)
+  .then( () => {
+    if(_default) client.saddAsync("t:"+_token, _token)
+  })
   .then( () => e.addUISessions(_uuidOfUI, _token, _uiHeartbeatInterval))
   .then( () => client.expireAsync("t:"+_token, _expiry))
 };

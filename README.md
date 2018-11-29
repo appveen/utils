@@ -9,7 +9,7 @@ This library contains various utility modules to ease development work.
     5. __getCount:__ increments the count of Id and triggers a callback specified in the argument. It takes three arguments 1. collectionName 2. expiry of Id(can be null) 3. callback function
 2. __cache__: Helper functions to use [Redis](https://redis.io) as a cache for user sessions
     1. uuid() : Generates a UUID without “-“
-    2. addToken(_token, _uuidOfUI, _expiry) : Add a new user token with the UUID for UI session with expiry
+    2. addToken(_token, _default, _uuidOfUI, _expiry) : Add a new user token with the UUID for UI session with expiry
     3. addUISessions(_uuidOfUI, _token, _uiHeartbeatTimeOut): Start tracing a UI session
     4. handleHeartBeat(_uuidOfUI, _token, _uiHeartbeatTimeOut): handle heartbeats from UI 
     5. showUISessions(_token): Get the list of active UI sessions
