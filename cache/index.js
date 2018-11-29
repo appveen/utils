@@ -146,7 +146,7 @@ function cleanup(_t) {
       if(_k != "DUMMY" )
         client.existsAsync(_k)
         .then(_d => {
-          if (_d == 0) client.srem(_t, _k);
+          if (_d == 0) client.sremAsync(_t, _k);
         });
     })
   })
