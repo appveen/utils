@@ -33,6 +33,8 @@ e.addUser = (_uid, _token, _singleLogin) => {
   else return client.saddAsync(_uid, _token);
 }
 
+e.checkUser = (_uid) => client.existsAsync(_user).then(_d => _d == 1);
+
 e.removeUser = (_uid) => {
   logger.debug("Inside ::  removeUser()");
   logger.debug(`uid :: ${_uid}`);
