@@ -42,25 +42,14 @@ e.removeUser = (_uid) => {
   .then( _type => {
     if( _type == "string") {
       client.getAsync(_uid)
-      .then( _token => client.existsAsync("t:"+_token))
-      .then(_d => {
-        if( _d == 0 ) {
-          client.getAsync(_uid)
-          .then( _token => e.blacklist(_token))
-          .then( () => client.delAsync(_uid))
-        }
-      });
+      .then( _token => e.blacklist(_token))
+      .then( () => client.delAsync(_uid))
     } else {
       client.smembersAsync(_uid)
       .then( _tokens => {
         _tokens.forEach(_token => {
-          client.existsAsync("t:" + _token)
-          .then(_d => {
-            if (_d == 1) {
-              client.sremAsync(_uid, _token)
-              .then( () => e.blacklist(_token))
-            }
-          });
+          client.sremAsync(_uid, _token)
+          .then( () => e.blacklist(_token))
         })
       })
     }
