@@ -39,23 +39,23 @@ e.removeUser = (_uid) => {
   client.typeAsync(_user)
   .then( _type => {
     if( _type == "string") {
-      client.getAsync(_user)
+      client.getAsync(_uid)
       .then( _token => client.existsAsync("t:"+_token))
       .then(_d => {
         if( _d == 0 ) {
-          client.getAsync(_user)
+          client.getAsync(_uid)
           .then( _token => e.blacklist(_token))
-          .then( () => client.delAsync(_user))
+          .then( () => client.delAsync(_uid))
         }
       });
     } else {
-      client.smembersAsync(_user)
+      client.smembersAsync(_uid)
       .then( _tokens => {
         _tokens.forEach(_token => {
           client.existsAsync("t:" + _token)
           .then(_d => {
             if (_d == 0) {
-              client.sremAsync(_user, _token)
+              client.sremAsync(_uid, _token)
               .then( () => e.blacklist(_token))
             }
           });
