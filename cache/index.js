@@ -38,7 +38,7 @@ e.checkUser = (_uid) => client.existsAsync(_uid).then(_d => _d == 1);
 e.removeUser = (_uid) => {
   logger.debug("Inside ::  removeUser()");
   logger.debug(`uid :: ${_uid}`);
-  client.typeAsync(_user)
+  client.typeAsync(_uid)
   .then( _type => {
     if( _type == "string") {
       client.getAsync(_uid)
