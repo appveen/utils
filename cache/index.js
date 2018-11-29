@@ -75,7 +75,7 @@ e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return client.saddAsync("t:"+_token, _uuidOfUI)
   .then( () => {
-    if(_default) client.saddAsync("t:"+_token, _token)
+    if(_default) client.saddAsync("t:"+_token, "DUMMY")
   })
   .then( () => e.addUISessions(_uuidOfUI, _token, _uiHeartbeatInterval))
   .then( () => client.expireAsync("t:"+_token, calculateExpirySeconds(_expiry)))
@@ -143,7 +143,7 @@ function cleanup(_t) {
   client.smembersAsync(_t)
   .then( _keys => {
     _keys.forEach(_k => {
-      if(_t.indexOf(_k) != -1 )
+      if(_k != "DUMMY" )
         client.existsAsync(_k)
         .then(_d => {
           if (_d == 0) client.srem(_t, _k);
