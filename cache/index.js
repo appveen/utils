@@ -17,7 +17,7 @@ client.on('connect', function() {
 });
 
 function calculateExpirySeconds(expiry){
-  return (Date.now() - expiry)/1000;
+  return parseInt((expiry - Date.now())/1000);
 }
 
 e.uuid = (a) => {
