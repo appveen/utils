@@ -10,6 +10,15 @@ e.uuid = (a) => {
   return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,e.uuid)
 }
 
+e.addUser = (_uid, _token, _singleLogin) => {
+  logger.debug("Inside ::  addUser()");
+  logger.debug(`uid :: ${_uid}`);
+  logger.debug(`token :: ${_token}`);
+  logger.debug(`singleLogin :: ${_singleLogin}`);
+  if(_singleLogin) return client.setAsync(_uid, _token);
+  else return client.saddAsync(_uid, _token);
+}
+
 e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   logger.debug("Inside ::  addToken()");
   logger.debug(`token :: ${_token}`);
@@ -26,7 +35,7 @@ e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
 };
 
 e.refreshToken = (_tokenOld, _tokenNew, _expiry) => {
-  logger.debug("Inside ::  addToken()");
+  logger.debug("Inside ::  refreshToken()");
   logger.debug(`token OLD :: ${_tokenOld}`);
   logger.debug(`token NEW :: ${_tokenNew}`);
   logger.debug(`expiry :: ${_expiry}`);
@@ -78,6 +87,8 @@ function checkSessions(){
   logger.debug("Running :: checkSessions()");
   client.keysAsync("t:*")
   .then( _tokens => _tokens.forEach(_t => cleanup(_t)))
+  client.keysAsync("USR*")
+  .then( _users => _users.forEach(_u => cleanupUsers(_u)))
 }
 
 function cleanup(_t) {
@@ -91,6 +102,31 @@ function cleanup(_t) {
         if (_d == 0) client.srem(_t, _k);
       });
     })
+  })
+}
+
+function cleanupUsers(_t) {
+  logger.debug("Inside ::  cleanupUsers()");
+  logger.debug(_t);
+  client.typeAsync(_t)
+  .then( _type => {
+    if( _type == "string") {
+      client.getAsync(_t)
+      .then( _token => client.existsAsync(_token))
+      .then(_d => {
+        if( _d == 0 ) client.delAsync(_t)
+      });
+    } else {
+      client.smembersAsync(_t)
+      .then( _keys => {
+        _keys.forEach(_k => {
+          client.existsAsync("t:" + _k)
+          .then(_d => {
+            if (_d == 0) client.srem(_t, _k);
+          });
+        })
+      })
+    }
   })
 }
 
