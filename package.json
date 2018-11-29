@@ -17,12 +17,13 @@
   },
   "homepage": "https://github.com/appveen/utils.git#readme",
   "dependencies": {
+    "jsonwebtoken": "^8.1.0",
     "log4js": "^3.0.6",
     "mongoose": "^5.2.4",
-    "jsonwebtoken": "^8.1.0",
+    "redis": "^2.8.0",
     "request": "^2.83.0"
   },
   "devDependencies": {
-      "eslint": "^5.1.0"
+    "eslint": "^5.1.0"
   }
 }

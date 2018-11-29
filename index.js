@@ -1,6 +1,7 @@
 var rand = require("./rand");
 var date = require("./date");
 var IDGenerator = require("./IDGenerator");
+var cache = require("./cache");
 var counter = require("./counter");
 var logger = require("./logger");
 var authMiddleware = require("./AuthorizationMiddleware");
@@ -11,6 +12,7 @@ module.exports = {
     rand :   rand,
     date : date,
     getUniqueID : IDGenerator,
+    cache: cache,
     counter: counter,
     logger : logger,
 	authMiddleware : authMiddleware,
