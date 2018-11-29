@@ -112,7 +112,7 @@ function cleanupUsers(_t) {
   .then( _type => {
     if( _type == "string") {
       client.getAsync(_t)
-      .then( _token => client.existsAsync(_token))
+      .then( _token => client.existsAsync("t:"+_token))
       .then(_d => {
         if( _d == 0 ) client.delAsync(_t)
       });
