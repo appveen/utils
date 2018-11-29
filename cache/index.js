@@ -21,6 +21,17 @@ e.addToken = (_token, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   .then( () => client.expireAsync("t:"+_token, _expiry))
 };
 
+e.refreshToken = (_tokenOld, _tokenNew, _expiry) => {
+  logger.debug("Inside ::  addToken()");
+  logger.debug(`token OLD :: ${_tokenOld}`);
+  logger.debug(`token NEW :: ${_tokenNew}`);
+  logger.debug(`expiry :: ${_expiry}`);
+  return client.smembersAsync("t:"+_tokenOld)
+  .then( _d => client.saddAsync("t:"+_tokenNew, _d))
+  .then( () => client.expireAsync("t:"+_tokenNew, _expiry))
+  .then( () => client.delAsync("t:"+_tokenOld))
+};
+
 e.addUISessions = (_uuidOfUI, _token, _uiHeartbeatInterval) => {
   logger.debug("Inside ::  addUISessions()");
   logger.debug(`uuidOfUI :: ${_uuidOfUI}`);
