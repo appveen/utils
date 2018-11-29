@@ -140,7 +140,6 @@ function checkSessions(){
 }
 
 function cleanup(_t) {
-  logger.debug(_t);
   client.smembersAsync(_t)
   .then( _keys => {
     _keys.forEach(_k => {
@@ -154,7 +153,6 @@ function cleanup(_t) {
 }
 
 function cleanupUsers(_user) {
-  logger.debug(_user);
   client.typeAsync(_user)
   .then( _type => {
     if( _type == "string") {
