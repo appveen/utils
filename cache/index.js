@@ -4,9 +4,6 @@ bluebird.promisifyAll(redis);
 const client = redis.createClient();
 const logger = global.logger;
 
-const defaultTokenTimeOut = 300; // replace with env var
-const uiHeartbeatTimeOut = 10; // replace with env var
-
 let e = {};
 
 e.uuid = (a) => {
@@ -20,23 +17,25 @@ e.addToken = (_token, _uuidOfUI, _expiry) => {
   logger.debug(`_expiry :: ${_expiry}`);
   return client.saddAsync("t:"+_token, _uuidOfUI)
   .then( () => e.addUISessions(_uuidOfUI, _token))
-  .then( () => client.expireAsync("t:"+_token, _expiry ? _expiry : defaultTokenTimeOut))
+  .then( () => client.expireAsync("t:"+_token, _expiry))
 };
 
-e.addUISessions = (_uuidOfUI, _token) => {
+e.addUISessions = (_uuidOfUI, _token, _uiHeartbeatTimeOut) => {
   logger.debug("Inside ::  addUISessions()");
   logger.debug(`_uuidOfUI :: ${_uuidOfUI}`);
   logger.debug(`token :: ${_token}`);
+  logger.debug(`uiHeartbeatTimeOut :: ${_uiHeartbeatTimeOut}`);
   return client.setAsync(_uuidOfUI, _token)
   .then( () => client.expireAsync(_uuidOfUI, uiHeartbeatTimeOut));
 };
 
-e.handleHeartBeat = (_uuidOfUI, _token) => {
+e.handleHeartBeat = (_uuidOfUI, _token, _uiHeartbeatTimeOut) => {
   logger.debug("Inside ::  handleHeartBeat()");
   logger.debug(`_uuidOfUI :: ${_uuidOfUI}`);
   logger.debug(`token :: ${_token}`);
+  logger.debug(`uiHeartbeatTimeOut :: ${_uiHeartbeatTimeOut}`);
   return client.setAsync(_uuidOfUI, _token)
-  .then( () => client.expireAsync(_uuidOfUI, uiHeartbeatTimeOut));
+  .then( () => client.expireAsync(_uuidOfUI, _uiHeartbeatTimeOut));
 }
 
 e.showUISessions = (_token) => {
