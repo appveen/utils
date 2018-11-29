@@ -55,7 +55,7 @@ e.removeUser = (_uid) => {
           client.existsAsync("t:" + _token)
           .then(_d => {
             if (_d == 0) {
-              client.srem(_user, _token)
+              client.sremAsync(_user, _token)
               .then( () => e.blacklist(_token))
             }
           });
@@ -171,7 +171,7 @@ function cleanupUsers(_user) {
           client.existsAsync("t:" + _token)
           .then(_d => {
             if (_d == 0) {
-              client.srem(_user, _token)
+              client.sremAsync(_user, _token)
               .then( () => e.blacklist(_token))
             }
           });
