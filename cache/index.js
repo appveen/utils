@@ -54,7 +54,7 @@ e.removeUser = (_uid) => {
         _tokens.forEach(_token => {
           client.existsAsync("t:" + _token)
           .then(_d => {
-            if (_d == 0) {
+            if (_d == 1) {
               client.sremAsync(_uid, _token)
               .then( () => e.blacklist(_token))
             }
