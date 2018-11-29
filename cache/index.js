@@ -33,6 +33,38 @@ e.addUser = (_uid, _token, _singleLogin) => {
   else return client.saddAsync(_uid, _token);
 }
 
+e.removeUser = (_uid) => {
+  logger.debug("Inside ::  removeUser()");
+  logger.debug(`uid :: ${_uid}`);
+  client.typeAsync(_user)
+  .then( _type => {
+    if( _type == "string") {
+      client.getAsync(_user)
+      .then( _token => client.existsAsync("t:"+_token))
+      .then(_d => {
+        if( _d == 0 ) {
+          client.getAsync(_user)
+          .then( _token => e.blacklist(_token))
+          .then( () => client.delAsync(_user))
+        }
+      });
+    } else {
+      client.smembersAsync(_user)
+      .then( _tokens => {
+        _tokens.forEach(_token => {
+          client.existsAsync("t:" + _token)
+          .then(_d => {
+            if (_d == 0) {
+              client.srem(_user, _token)
+              .then( () => e.blacklist(_token))
+            }
+          });
+        })
+      })
+    }
+  })
+}
+
 e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   logger.debug("Inside ::  addToken()");
   logger.debug(`token :: ${_token}`);
@@ -90,17 +122,17 @@ e.isValidToken = (_k) => client.existsAsync("t:" + _k).then(_d => _d == 1);
 
 e.isBlacklistedToken = (_k) => client.existsAsync("b:" + _k).then(_d => _d == 1);
 
-e.blacklist = (_token, _expiry) => {
+e.blacklist = (_token) => {
   logger.debug("Inside ::  addToken()");
   logger.debug(`token :: ${_token}`);
   logger.debug(`_expiry :: ${_expiry}`);
-  return client.delAsync("t:"+_token)
-  .then( () => client.saddAsync("b:"+_token, _expiry))
-  .then( () => client.expireAsync("b:"+_token, _expiry))
+  return client.saddAsync("b:"+_token, _token)
+  .then( () => client.ttlAsync("t:"+_token))
+  .then( _expiry => client.expireAsync("b:"+_token, _expiry))
+  .then( () => client.delAsync("t:"+_token))
 };
 
 function checkSessions(){
-  logger.debug("Running :: checkSessions()");
   client.keysAsync("t:*")
   .then( _tokens => _tokens.forEach(_t => cleanup(_t)))
   client.keysAsync("USR*")
@@ -108,37 +140,43 @@ function checkSessions(){
 }
 
 function cleanup(_t) {
-  logger.debug("Inside ::  cleanup()");
   logger.debug(_t);
   client.smembersAsync(_t)
   .then( _keys => {
     _keys.forEach(_k => {
-      client.existsAsync(_k)
-      .then(_d => {
-        if (_d == 0) client.srem(_t, _k);
-      });
+      if(_t.indexOf(_k) != -1 )
+        client.existsAsync(_k)
+        .then(_d => {
+          if (_d == 0) client.srem(_t, _k);
+        });
     })
   })
 }
 
-function cleanupUsers(_t) {
-  logger.debug("Inside ::  cleanupUsers()");
-  logger.debug(_t);
-  client.typeAsync(_t)
+function cleanupUsers(_user) {
+  logger.debug(_user);
+  client.typeAsync(_user)
   .then( _type => {
     if( _type == "string") {
-      client.getAsync(_t)
+      client.getAsync(_user)
       .then( _token => client.existsAsync("t:"+_token))
       .then(_d => {
-        if( _d == 0 ) client.delAsync(_t)
+        if( _d == 0 ) {
+          client.getAsync(_user)
+          .then( _token => e.blacklist(_token))
+          .then( () => client.delAsync(_user))
+        }
       });
     } else {
-      client.smembersAsync(_t)
-      .then( _keys => {
-        _keys.forEach(_k => {
-          client.existsAsync("t:" + _k)
+      client.smembersAsync(_user)
+      .then( _tokens => {
+        _tokens.forEach(_token => {
+          client.existsAsync("t:" + _token)
           .then(_d => {
-            if (_d == 0) client.srem(_t, _k);
+            if (_d == 0) {
+              client.srem(_user, _token)
+              .then( () => e.blacklist(_token))
+            }
           });
         })
       })
