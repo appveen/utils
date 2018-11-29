@@ -16,6 +16,7 @@ This library contains various utility modules to ease development work.
     6. isValidToken(_k): Check if the given key _k is a valid token
     7. isBlacklistedToken(_k): Check if the given key _k is a blacklisted token
     8. blacklist(_token, _expiry): Blacklist a token with the given expiry
+    9. refreshToken(_tokenOld, _tokenNew, _expiry): Used when a new token is issued.
 3. __date:__ returns a date, months before specified month. Takes one argument: month
 4. __IDGenerator:__
     1. __getUniqueID:__ generates a uniqueID which can be a candidate _id of a model.
