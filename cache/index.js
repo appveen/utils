@@ -72,16 +72,17 @@ e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   .then( () => client.expireAsync("t:"+_token, calculateExpirySeconds(_expiry)))
 };
 
-e.refreshToken = (_tokenOld, _tokenNew, _expiry) => {
+e.refreshToken = (_uid, _tokenOld, _tokenNew, _expiryNew, _singleLogin) => {
   logger.debug("Inside ::  refreshToken()");
   logger.debug(`token OLD :: ${_tokenOld}`);
   logger.debug(`token NEW :: ${_tokenNew}`);
-  logger.debug(`expiry :: ${_expiry}`);
-  logger.debug(`expiry in seconds:: ${calculateExpirySeconds(_expiry)}`);
-  return client.smembersAsync("t:"+_tokenOld)
+  logger.debug(`expiry :: ${_expiryNew}`);
+  logger.debug(`expiry in seconds:: ${calculateExpirySeconds(_expiryNew)}`);
+  return e.addUser(_uid, _tokenNew, _singleLogin)
+  .then( () => client.smembersAsync("t:"+_tokenOld))
   .then( _d => client.saddAsync("t:"+_tokenNew, _d))
-  .then( () => client.expireAsync("t:"+_tokenNew, calculateExpirySeconds(_expiry)))
-  .then( () => client.delAsync("t:"+_tokenOld))
+  .then( () => client.expireAsync("t:"+_tokenNew, calculateExpirySeconds(_expiryNew)))
+  .then( () => e.blacklist(_tokenOld))
 };
 
 e.addUISessions = (_uuidOfUI, _token, _uiHeartbeatInterval) => {
