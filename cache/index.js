@@ -123,9 +123,8 @@ e.isValidToken = (_k) => client.existsAsync("t:" + _k).then(_d => _d == 1);
 e.isBlacklistedToken = (_k) => client.existsAsync("b:" + _k).then(_d => _d == 1);
 
 e.blacklist = (_token) => {
-  logger.debug("Inside ::  addToken()");
+  logger.debug("Inside ::  blacklist()");
   logger.debug(`token :: ${_token}`);
-  logger.debug(`_expiry :: ${_expiry}`);
   return client.saddAsync("b:"+_token, _token)
   .then( () => client.ttlAsync("t:"+_token))
   .then( _expiry => client.expireAsync("b:"+_token, _expiry))
