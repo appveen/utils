@@ -4,8 +4,10 @@ bluebird.promisifyAll(redis);
 let host = process.env.REDIS_HOST;
 let port = process.env.REDIS_PORT;
 const client = redis.createClient(port, host);
-const logger = global.logger;
-
+let log4js = require('log4js');
+const loggerName = process.env.HOSTNAME ? `[cache] [${process.env.HOSTNAME}]` : '[cache]';
+let logger = log4js.getLogger(loggerName);
+logger.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
 let e = {};
 
 client.on('error', function (err) {
