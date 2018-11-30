@@ -5,9 +5,18 @@ var logMiddleware = (logger) => {
         if (reqId == Number.MAX_VALUE) {
             reqId = counter = 0;
         }
-        logger.info(reqId + " " + req.ip + " " + req.method + " " + req.originalUrl);
-        next();
-        logger.trace(reqId + " Sending Response");
+        let url =[];
+        let api = req.originalUrl.split('?');
+        url = api[0].split('/');
+        if(url.length == 4  & url[3] == 'health')
+        {
+            next();
+        }
+        else{
+            logger.info(reqId + " " + req.ip + " " + req.method + " " + req.originalUrl);
+            next();
+            logger.trace(reqId + " Sending Response");
+        }
     };
 }
 
