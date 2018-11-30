@@ -89,7 +89,6 @@ e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogi
     .then(() => e.addUISessions(_uuidOfUI, _tokenNew, _uiHeartbeatInterval))
     .then(() => client.saddAsync("t:" + _tokenNew, _uuidOfUI))
     .then(() => client.expireAsync("t:" + _tokenNew, calculateExpirySeconds(_expiryNew)))
-    .then(() => e.blacklist(_tokenOld))
 };
 
 e.addUISessions = (_uuidOfUI, _token, _uiHeartbeatInterval) => {
