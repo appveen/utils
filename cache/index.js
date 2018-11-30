@@ -76,8 +76,11 @@ e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogi
   logger.debug("Inside ::  refreshToken()");
   logger.debug(`token OLD :: ${_tokenOld}`);
   logger.debug(`token NEW :: ${_tokenNew}`);
+  logger.debug(`uuidOfUI :: ${_uuidOfUI}`);
   logger.debug(`expiry :: ${_expiryNew}`);
   logger.debug(`expiry in seconds:: ${calculateExpirySeconds(_expiryNew)}`);
+  logger.debug(`singleLogin :: ${_singleLogin}`);
+  logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return e.addUser(_uid, _tokenNew, _singleLogin)
     .then(() => client.smembersAsync("t:" + _tokenOld))
     .then(_d => client.saddAsync("t:" + _tokenNew, _d))
