@@ -40,14 +40,14 @@ e.checkUser = (_uid) => client.existsAsync(_uid).then(_d => _d == 1);
 e.removeUser = (_uid) => {
   logger.debug("Inside ::  removeUser()");
   logger.debug(`uid :: ${_uid}`);
-  client.typeAsync(_uid)
+  return client.typeAsync(_uid)
     .then(_type => {
       if (_type == "string") {
-        client.getAsync(_uid)
+        return client.getAsync(_uid)
           .then(_token => e.blacklist(_token))
           .then(() => client.delAsync(_uid))
       } else {
-        client.smembersAsync(_uid)
+        return client.smembersAsync(_uid)
           .then(_tokens => {
             _tokens.forEach(_token => {
               client.sremAsync(_uid, _token)
