@@ -14,7 +14,7 @@ function calculateExpirySeconds(expiry) {
   return parseInt((expiry - Date.now()) / 1000);
 }
 
-e.connect = () => {
+e.init = () => {
   client = redis.createClient(port, host);
   client.on('error', function (err) {
     logger.error(err.message);
@@ -22,7 +22,9 @@ e.connect = () => {
 
   client.on('connect', function () {
     logger.info('Redis client connected');
+    setInterval(() => checkSessions(), 1000);
   });
+  
 }
 
 e.uuid = (a) => {
@@ -192,7 +194,5 @@ function cleanupUsers(_user) {
       }
     })
 }
-
-setInterval(() => checkSessions(), 1000);
 
 module.exports = e;
