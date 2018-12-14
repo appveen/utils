@@ -3,23 +3,26 @@ const redis = require("redis");
 bluebird.promisifyAll(redis);
 let host = process.env.REDIS_HOST;
 let port = process.env.REDIS_PORT;
-const client = redis.createClient(port, host);
+let client = null;
 let log4js = require('log4js');
 const loggerName = process.env.HOSTNAME ? `[cache] [${process.env.HOSTNAME}]` : '[cache]';
 let logger = log4js.getLogger(loggerName);
 logger.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
 let e = {};
 
-client.on('error', function (err) {
-  logger.error(err.message);
-})
-
-client.on('connect', function () {
-  logger.info('Redis client connected');
-});
-
 function calculateExpirySeconds(expiry) {
   return parseInt((expiry - Date.now()) / 1000);
+}
+
+e.connect = () => {
+  client = redis.createClient(port, host);
+  client.on('error', function (err) {
+    logger.error(err.message);
+  })
+
+  client.on('connect', function () {
+    logger.info('Redis client connected');
+  });
 }
 
 e.uuid = (a) => {
