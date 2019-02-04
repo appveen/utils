@@ -8,7 +8,7 @@ var logMiddleware = (logger) => {
         let url =[];
         let api = req.originalUrl.split('?');
         url = api[0].split('/');
-        if(url.length == 4  & url[3] == 'health')
+        if((url.length == 4  & url[3] == 'health')|| api == '/dm/health')
         {
             next();
         }
