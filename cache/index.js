@@ -5,9 +5,16 @@ let host = process.env.REDIS_HOST;
 let port = process.env.REDIS_PORT;
 let client = null;
 let log4js = require('log4js');
+const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL: 'info';
+log4js.configure({
+    levels: {
+      AUDIT: { value: Number.MAX_VALUE-1, colour: 'yellow' }
+    },
+    appenders: { out: { type: 'stdout', layout: { type: 'basic' } } },
+    categories: { default: { appenders: ['out'], level: logLevel.toUpperCase() } }
+  });
 const loggerName = process.env.HOSTNAME ? `[cache] [${process.env.HOSTNAME}]` : '[cache]';
 let logger = log4js.getLogger(loggerName);
-logger.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
 let e = {};
 
 function calculateExpirySeconds(expiry) {
