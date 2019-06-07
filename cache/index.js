@@ -202,4 +202,8 @@ function cleanupUsers(_user) {
     })
 }
 
+e.isConnected= ()=>{
+  return client.connected;
+}
+
 module.exports = e;
