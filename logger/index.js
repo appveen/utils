@@ -19,7 +19,7 @@ function getLogger(defaultContext) {
               let user = defaultContext.user;
               req = logEvent.data[0];
               if (req && typeof req == 'object') {
-                user = req.get('user') || req.user || user;
+                user = (typeof req.get == 'function' && req.get('user')) || req.user || user;
                 logEvent.data.shift();
               }
               return user;
@@ -27,7 +27,7 @@ function getLogger(defaultContext) {
             txnId: function () {
               let txnId = defaultContext.txnId;
               if (req && typeof req == 'object') {
-                txnId = req.get('txnId') || req.txnId || txnId;
+                txnId = (typeof req.get == 'function' && req.get('txnId')) || req.txnId || txnId;
               }
               return txnId;
             }
