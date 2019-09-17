@@ -12,9 +12,9 @@ var logMiddleware = (logger) => {
             next();
         }
         else{
-            logger.info(reqId + " " + req.ip + " " + req.method + " " + req.originalUrl);
+            logger.info(req, reqId + " " + req.ip + " " + req.method + " " + req.originalUrl);
             next();
-            logger.trace(reqId + " Sending Response");
+            logger.trace(req, reqId + " Sending Response");
         }
     };
 }
