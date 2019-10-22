@@ -18,9 +18,11 @@
   "homepage": "https://github.com/appveen/utils.git#readme",
   "dependencies": {
     "bluebird": "^3.5.3",
+    "file-type": "^11.1.0",
     "jsonwebtoken": "^8.1.0",
     "log4js": "^3.0.6",
     "mongoose": "^5.2.4",
+    "read-chunk": "^3.2.0",
     "redis": "^2.8.0",
     "request": "^2.83.0"
   },

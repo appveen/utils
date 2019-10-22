@@ -7,6 +7,7 @@ var logger = require("./logger");
 var authMiddleware = require("./AuthorizationMiddleware");
 var logMiddleware = require("./logMiddleware");
 var logToMongo = require("./logToMongo");
+var fileValidator = require('./fileValidator');
 
 module.exports = {
     rand :   rand,
@@ -17,5 +18,6 @@ module.exports = {
     logger : logger,
 	authMiddleware : authMiddleware,
     logMiddleware: logMiddleware,
-    logToMongo: logToMongo	
+    logToMongo: logToMongo,
+    fileValidator: fileValidator	
 };
