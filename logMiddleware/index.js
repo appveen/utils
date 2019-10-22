@@ -12,13 +12,11 @@ var logMiddleware = (logger) => {
             next();
         }
         else{
-            logger.info(req, reqId + " " + req.ip + " " + req.method + " " + req.originalUrl);
+            logger.info(reqId + " " + req.ip + " " + req.method + " " + req.originalUrl);
             next();
-            logger.trace(req, reqId + " Sending Response");
+            logger.trace(reqId + " Sending Response");
         }
     };
 }
-
-
 
 module.exports.getLogMiddleware = logMiddleware;
