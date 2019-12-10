@@ -1,6 +1,7 @@
 
 const readChunk = require('read-chunk');
 const fileType = require('file-type');
+const textFormat = ['csv', 'txt'];
 
 function toArrayBuffer(buf, length) {
     var ab = new ArrayBuffer(length);
@@ -22,7 +23,7 @@ function getHex(buff, length) {
     return hex;
 }
 
-function validateCSV(options) {
+function validateTextFormat(options) {
     let len = 4;
     const blob = options.type == 'Binary' ? readChunk.sync(options.path, 0, len) : toArrayBuffer(options.data, len);
     const uint = new Uint8Array(blob);
@@ -43,7 +44,7 @@ function validateOldMSOffice(options) {
 }
 
 function vatidateFile(options, ext) {
-    if (ext == 'csv') return validateCSV(options);
+    if (textFormat.indexOf(ext)>-1) return validateTextFormat(options);
     if (['doc', 'xls', 'ppt', 'msg'].indexOf(ext) > -1) return validateOldMSOffice(options);
     let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, fileType.minimumBytes) : toArrayBuffer(options.data, fileType.minimumBytes);
     let fileTypeObj = fileType(buffer);
