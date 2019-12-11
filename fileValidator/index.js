@@ -44,9 +44,15 @@ function validateOldMSOffice(options) {
 }
 
 function vatidateFile(options, ext) {
-    if (textFormat.indexOf(ext)>-1) return validateTextFormat(options);
+    if (textFormat.indexOf(ext) > -1) return validateTextFormat(options);
     if (['doc', 'xls', 'ppt', 'msg'].indexOf(ext) > -1) return validateOldMSOffice(options);
     let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, fileType.minimumBytes) : toArrayBuffer(options.data, fileType.minimumBytes);
+    //remove BOM encoding
+    if (ext == 'xml') {
+        let hex = options.type == 'Binary' ? getHex(readChunk.sync(options.path, 0, 3), 3) : getHex(options.data, 3);
+        if (hex == 'EFBBBF')
+            buffer = buffer.slice(3);
+    }
     let fileTypeObj = fileType(buffer);
     if (!fileTypeObj) return false;
     return fileTypeObj.ext == ext;
