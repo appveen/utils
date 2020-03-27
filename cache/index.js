@@ -13,7 +13,7 @@ log4js.configure({
   appenders: { out: { type: 'stdout', layout: { type: 'basic' } } },
   categories: { default: { appenders: ['out'], level: logLevel.toUpperCase() } }
 });
-const loggerName = process.env.HOSTNAME ? `[cache] [${process.env.HOSTNAME}]` : '[cache]';
+const loggerName = process.env.HOSTNAME ? `[CACHE] [${process.env.HOSTNAME}]` : '[CACHE]';
 let logger = log4js.getLogger(loggerName);
 let e = {};
 
@@ -43,20 +43,20 @@ e.addUser = (_uid, _token, _singleLogin) => {
   logger.debug(`uid :: ${_uid}`);
   logger.debug(`token :: ${_token}`);
   logger.debug(`singleLogin :: ${_singleLogin}`);
-  _uid = `USR:${_uid}`;
+  _uid = `ODP:${_uid}`;
   if (_singleLogin) return client.setAsync(_uid, _token);
   else return client.saddAsync(_uid, _token);
 }
 
 e.checkUser = (_uid) => {
-  _uid = `USR:${_uid}`;
+  _uid = `ODP:${_uid}`;
   return client.existsAsync(_uid).then(_d => _d == 1);
 }
 
 e.removeUser = (_uid) => {
   logger.debug("Inside ::  removeUser()");
   logger.debug(`uid :: ${_uid}`);
-  _uid = `USR:${_uid}`;
+  _uid = `ODP:${_uid}`;
   return client.typeAsync(_uid)
     .then(_type => {
       if (_type == "string") {
@@ -101,7 +101,7 @@ e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogi
   logger.debug(`singleLogin :: ${_singleLogin}`);
   logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   logger.debug(`extend :: ${_extend}`);
-  _uid = `USR:${_uid}`;
+  _uid = `ODP:${_uid}`;
   return e.addUser(_uid, _tokenNew, _singleLogin)
     .then(() => client.smembersAsync("t:" + _tokenOld))
     .then(_d => {
@@ -161,7 +161,7 @@ e.blacklist = (_token) => {
 function checkSessions() {
   client.keysAsync("t:*")
     .then(_tokens => _tokens.forEach(_t => cleanup(_t)))
-  client.keysAsync("USR:*")
+  client.keysAsync("ODP:*")
     .then(_users => _users.forEach(_u => cleanupUsers(_u)))
 }
 
