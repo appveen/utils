@@ -7,6 +7,7 @@ var logger = require("./logger");
 var authMiddleware = require("./AuthorizationMiddleware");
 var logMiddleware = require("./logMiddleware");
 var logToMongo = require("./logToMongo");
+var fileValidator = require('./fileValidator');
 var objectUtils = require("./objectUtils");
 
 module.exports = {
@@ -19,5 +20,6 @@ module.exports = {
     authMiddleware: authMiddleware,
     logMiddleware: logMiddleware,
     logToMongo: logToMongo,
+    fileValidator: fileValidator,	
     objectUtils: objectUtils
 };

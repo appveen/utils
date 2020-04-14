@@ -19,6 +19,4 @@ var logMiddleware = (logger) => {
     };
 }
 
-
-
 module.exports.getLogMiddleware = logMiddleware;
