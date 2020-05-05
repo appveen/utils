@@ -1,5 +1,5 @@
 const bluebird = require("bluebird");
-const redis = require("redis");
+const redis = require("ioredis");
 bluebird.promisifyAll(redis);
 let host = process.env.REDIS_HOST;
 let port = process.env.REDIS_PORT;
@@ -21,8 +21,28 @@ function calculateExpirySeconds(expiry) {
   return parseInt((expiry - Date.now()) / 1000);
 }
 
+function getClusterNodes() {
+  let nodes = [];
+  //format: 127.0.0.1,127.0.0.2:8990 results in 127.0.0.1:6379 and 127.0.0.2:8990 respectively
+  let clusterNodes = process.env.REDIS_CLUSTER.split(',');
+  clusterNodes.map(node => {
+    nodes.push({
+      host: node.split(':')[0],
+      port: node.split(':')[1] || '6379',
+    })
+  })
+  return nodes;
+}
+
 e.init = () => {
-  client = redis.createClient(port, host);
+  if (process.env.REDIS_CLUSTER) {
+    logger.info('***** REDIS CLUSTER ENABLED *****');
+    logger.info('Redis cluster nodes :: ', JSON.stringify(getClusterNodes()));
+    client = new redis.Cluster(getClusterNodes());
+  }
+  else {
+    client = redis.createClient(port, host);
+  }
   client.on('error', function (err) {
     logger.error(err.message);
   })
