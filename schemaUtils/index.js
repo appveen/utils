@@ -23,31 +23,35 @@ function getProperties(obj) {
     const properties = {};
     Object.keys(obj).forEach(key => {
         const def = obj[key];
-        properties[key] = {
+        let dataKey = key;
+        if (def.properties.dataKey) {
+            dataKey = def.properties.dataKey;
+        }
+        properties[dataKey] = {
             type: def.type.toLowerCase(),
             description: def.properties.description
         };
         if (def.type === "Object") {
             const converted = getProperties(def.definition);
-            properties[key].properties = converted.properties;
-            properties[key].required = converted.required;
+            properties[dataKey].properties = converted.properties;
+            properties[dataKey].required = converted.required;
         } else if (def.type === "Array") {
-            properties[key].items = {};
-            properties[key].items.type = def.definition._self.type.toLowerCase();
+            properties[dataKey].items = {};
+            properties[dataKey].items.type = def.definition._self.type.toLowerCase();
             if (def.definition._self.type === "Object") {
                 const converted = getProperties(def.definition._self.definition);
-                properties[key].items.properties = converted.properties;
-                properties[key].items.required = converted.required;
+                properties[dataKey].items.properties = converted.properties;
+                properties[dataKey].items.required = converted.required;
             } else {
                 const validations = getValidations(def.definition._self);
-                Object.assign(properties[key].items, validations);
+                Object.assign(properties[dataKey].items, validations);
             }
         } else {
             const validations = getValidations(def);
-            Object.assign(properties[key], validations);
+            Object.assign(properties[dataKey], validations);
         }
         if (def.properties.required) {
-            required.push(key);
+            required.push(dataKey);
         }
     });
     return {
