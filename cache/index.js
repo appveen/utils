@@ -121,7 +121,6 @@ e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogi
   logger.trace(`singleLogin :: ${_singleLogin}`);
   logger.trace(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   logger.trace(`extend :: ${_extend}`);
-  _uid = `ODP:${_uid}`;
   return e.addUser(_uid, _tokenNew, _singleLogin)
     .then(() => client.smembersAsync("t:" + _tokenOld))
     .then(_d => {
