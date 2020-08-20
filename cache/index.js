@@ -36,11 +36,11 @@ function getClusterNodes() {
 
 e.init = () => {
   if (process.env.REDIS_CLUSTER) {
-    logger.info('***** REDIS CLUSTER ENABLED *****');
-    logger.info('Redis cluster nodes :: ', JSON.stringify(getClusterNodes()));
+    logger.info('Connecting to redis cluster nodes :: ', JSON.stringify(getClusterNodes()));
     client = new redis.Cluster(getClusterNodes());
   }
   else {
+  	logger.info('Connecting to redis standalone server');
     client = redis.createClient(port, host);
   }
   client.on('error', function (err) {
@@ -59,10 +59,10 @@ e.uuid = (a) => {
 }
 
 e.addUser = (_uid, _token, _singleLogin) => {
-  logger.debug("Inside ::  addUser()");
-  logger.debug(`uid :: ${_uid}`);
-  logger.debug(`token :: ${_token}`);
-  logger.debug(`singleLogin :: ${_singleLogin}`);
+  logger.trace("Inside ::  addUser()");
+  logger.trace(`uid :: ${_uid}`);
+  logger.trace(`token :: ${_token}`);
+  logger.trace(`singleLogin :: ${_singleLogin}`);
   _uid = `ODP:${_uid}`;
   if (_singleLogin) return client.setAsync(_uid, _token);
   else return client.saddAsync(_uid, _token);
@@ -74,8 +74,8 @@ e.checkUser = (_uid) => {
 }
 
 e.removeUser = (_uid) => {
-  logger.debug("Inside ::  removeUser()");
-  logger.debug(`uid :: ${_uid}`);
+  logger.trace("Inside ::  removeUser()");
+  logger.trace(`uid :: ${_uid}`);
   _uid = `ODP:${_uid}`;
   return client.typeAsync(_uid)
     .then(_type => {
@@ -96,13 +96,13 @@ e.removeUser = (_uid) => {
 }
 
 e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
-  logger.debug("Inside ::  addToken()");
-  logger.debug(`token :: ${_token}`);
-  logger.debug(`default :: ${_default}`);
-  logger.debug(`uuidOfUI :: ${_uuidOfUI}`);
-  logger.debug(`expiry :: ${_expiry}`);
-  logger.debug(`expiry in seconds:: ${calculateExpirySeconds(_expiry)}`);
-  logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
+  logger.trace("Inside ::  addToken()");
+  logger.trace(`token :: ${_token}`);
+  logger.trace(`default :: ${_default}`);
+  logger.trace(`uuidOfUI :: ${_uuidOfUI}`);
+  logger.trace(`expiry :: ${_expiry}`);
+  logger.trace(`expiry in seconds:: ${calculateExpirySeconds(_expiry)}`);
+  logger.trace(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return client.saddAsync("t:" + _token, _uuidOfUI)
     .then(() => {
       if (_default) client.saddAsync("t:" + _token, "DUMMY")
@@ -112,21 +112,20 @@ e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
 };
 
 e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogin, _uiHeartbeatInterval, _extend) => {
-  logger.debug("Inside ::  refreshToken()");
-  logger.debug(`token OLD :: ${_tokenOld}`);
-  logger.debug(`token NEW :: ${_tokenNew}`);
-  logger.debug(`uuidOfUI :: ${_uuidOfUI}`);
-  logger.debug(`expiry :: ${_expiryNew}`);
-  logger.debug(`expiry in seconds:: ${calculateExpirySeconds(_expiryNew)}`);
-  logger.debug(`singleLogin :: ${_singleLogin}`);
-  logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
-  logger.debug(`extend :: ${_extend}`);
-  _uid = `ODP:${_uid}`;
+  logger.trace("Inside ::  refreshToken()");
+  logger.trace(`token OLD :: ${_tokenOld}`);
+  logger.trace(`token NEW :: ${_tokenNew}`);
+  logger.trace(`uuidOfUI :: ${_uuidOfUI}`);
+  logger.trace(`expiry :: ${_expiryNew}`);
+  logger.trace(`expiry in seconds:: ${calculateExpirySeconds(_expiryNew)}`);
+  logger.trace(`singleLogin :: ${_singleLogin}`);
+  logger.trace(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
+  logger.trace(`extend :: ${_extend}`);
   return e.addUser(_uid, _tokenNew, _singleLogin)
     .then(() => client.smembersAsync("t:" + _tokenOld))
     .then(_d => {
-      logger.debug(`smembers :: ${_d}`);
-      logger.debug(typeof _d);
+      logger.trace(`smembers :: ${_d}`);
+      logger.trace(typeof _d);
       if (_d && _d.length > 0)
         return client.saddAsync("t:" + _tokenNew, _d);
       else return Promise.resolve();
@@ -141,28 +140,28 @@ e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogi
 };
 
 e.addUISessions = (_uuidOfUI, _token, _uiHeartbeatInterval) => {
-  logger.debug("Inside ::  addUISessions()");
-  logger.debug(`uuidOfUI :: ${_uuidOfUI}`);
-  logger.debug(`token :: ${_token}`);
-  logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
+  logger.trace("Inside ::  addUISessions()");
+  logger.trace(`uuidOfUI :: ${_uuidOfUI}`);
+  logger.trace(`token :: ${_token}`);
+  logger.trace(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return client.setAsync(_uuidOfUI, _token)
     .then(() => client.expireAsync(_uuidOfUI, _uiHeartbeatInterval));
 };
 
 e.handleHeartBeat = (_uuidOfUI, _token, _uiHeartbeatInterval) => {
-  logger.debug("Inside ::  handleHeartBeat()");
-  logger.debug(`uuidOfUI :: ${_uuidOfUI}`);
-  logger.debug(`token :: ${_token}`);
-  logger.debug(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
+  logger.trace("Inside ::  handleHeartBeat()");
+  logger.trace(`uuidOfUI :: ${_uuidOfUI}`);
+  logger.trace(`token :: ${_token}`);
+  logger.trace(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return client.setAsync(_uuidOfUI, _token)
     .then(() => client.expireAsync(_uuidOfUI, _uiHeartbeatInterval));
 }
 
 e.showUISessions = (_token) => {
-  logger.debug("Inside ::  showUISessions()");
-  logger.debug(`token :: ${_token}`);
+  logger.trace("Inside ::  showUISessions()");
+  logger.trace(`token :: ${_token}`);
   return client.smembersAsync("t:" + _token)
-    .then(_d => { logger.debug(_d); return _d; });
+    .then(_d => { logger.trace(_d); return _d; });
 };
 
 e.isValidToken = (_k) => client.existsAsync("t:" + _k).then(_d => _d == 1);
@@ -170,8 +169,8 @@ e.isValidToken = (_k) => client.existsAsync("t:" + _k).then(_d => _d == 1);
 e.isBlacklistedToken = (_k) => client.existsAsync("b:" + _k).then(_d => _d == 1);
 
 e.blacklist = (_token) => {
-  logger.debug("Inside ::  blacklist()");
-  logger.debug(`token :: ${_token}`);
+  logger.trace("Inside ::  blacklist()");
+  logger.trace(`token :: ${_token}`);
   return client.saddAsync("b:" + _token, _token)
     .then(() => client.ttlAsync("t:" + _token))
     .then(_expiry => client.expireAsync("b:" + _token, _expiry))
@@ -229,7 +228,8 @@ function cleanupUsers(_user) {
 }
 
 e.isConnected = () => {
-  return client.connected;
+	logger.trace(`Redis connection status : ${client.status}, ${client.status == 'ready'}`)
+  return client.status == 'ready';
 }
 
 module.exports = e;
