@@ -27,8 +27,13 @@ function getProperties(obj) {
         if (def.properties.dataKey) {
             dataKey = def.properties.dataKey;
         }
+        const dataTypes = [];
+        dataTypes.push(def.type.toLowerCase());
+        if (!def.properties.required) {
+            dataTypes.push("null");
+        }
         properties[dataKey] = {
-            type: def.type.toLowerCase(),
+            type: dataTypes,
             description: def.properties.description
         };
         if (def.type === "Object") {
