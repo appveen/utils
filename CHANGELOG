@@ -1,0 +1,2 @@
+v1.2.5
+- In schema utils added fix to allow null values if not required.
