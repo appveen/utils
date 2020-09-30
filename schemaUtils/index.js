@@ -28,6 +28,9 @@ function getProperties(obj) {
             dataKey = def.properties.dataKey;
         }
         const dataTypes = [];
+        if (def.type.toLowerCase() === "date") {
+            def.type = "string";
+        }
         dataTypes.push(def.type.toLowerCase());
         if (!def.properties.required) {
             dataTypes.push("null");

@@ -1,2 +1,5 @@
 v1.2.5
 - In schema utils added fix to allow null values if not required.
+
+v1.2.6
+- Type Date is converted to Type String.
