@@ -1,7 +1,7 @@
 
 const readChunk = require('read-chunk');
 const fileType = require('file-type');
-const textFormat = ['csv', 'txt', 'html', 'htm'];
+const textFormat = ['csv', 'txt', 'html', 'htm', 'css', 'ini', 'json', 'tsv', 'xml', 'yaml', 'yml', 'rst', 'md'];
 
 function toArrayBuffer(buf, length) {
     var ab = new ArrayBuffer(length);
