@@ -55,6 +55,7 @@ function vatidateFile(options, ext) {
     }
     let fileTypeObj = fileType(buffer);
     if (!fileTypeObj) return false;
+    if(ext == 'tiff' && fileTypeObj.ext == 'tif') return true;
     return fileTypeObj.ext == ext;
 }
 
