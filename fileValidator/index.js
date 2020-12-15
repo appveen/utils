@@ -1,7 +1,7 @@
 
 const readChunk = require('read-chunk');
 const fileType = require('file-type');
-const textFormat = ['csv', 'txt'];
+const textFormat = ['csv', 'txt', 'html', 'htm', 'css', 'ini', 'json', 'tsv', 'xml', 'yaml', 'yml', 'rst', 'md'];
 
 function toArrayBuffer(buf, length) {
     var ab = new ArrayBuffer(length);
@@ -44,7 +44,7 @@ function validateOldMSOffice(options) {
 }
 
 function vatidateFile(options, ext) {
-    if (textFormat.indexOf(ext) > -1) return validateTextFormat(options);
+    if (textFormat.indexOf(ext) > -1) return true; //validateTextFormat(options);
     if (['doc', 'xls', 'ppt', 'msg'].indexOf(ext) > -1) return validateOldMSOffice(options);
     let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, fileType.minimumBytes) : toArrayBuffer(options.data, fileType.minimumBytes);
     //remove BOM encoding
