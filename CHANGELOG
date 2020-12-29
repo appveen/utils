@@ -3,3 +3,9 @@ v1.2.5
 
 v1.2.6
 - Type Date is converted to Type String.
+
+v1.2.7
+- Removing file validation for text based formats.
+
+v1.2.8
+- Increasing cache cleanup scheduler interval to 10 secs.
