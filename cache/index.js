@@ -18,7 +18,7 @@ let logger = log4js.getLogger(loggerName);
 let e = {};
 
 function calculateExpirySeconds(expiry) {
-  return parseInt((expiry - Date.now()) / 10000);
+  return parseInt((expiry - Date.now()) / 1000);
 }
 
 function getClusterNodes() {
@@ -49,7 +49,7 @@ e.init = () => {
 
   client.on('connect', function () {
     logger.info('Redis client connected');
-    setInterval(() => checkSessions(), 1000);
+    setInterval(() => checkSessions(), 10000);
   });
 
 }
