@@ -9,3 +9,6 @@ v1.2.7
 
 v1.2.8
 - Increasing cache cleanup scheduler interval to 10 secs.
+
+v1.2.9
+- Minor fix for cache scheduler interval
