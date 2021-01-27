@@ -4,7 +4,7 @@ var logMiddleware = (logger) => {
     let api = req.originalUrl.split('?');
     if(api[0].endsWith('/health/live') || api[0].endsWith('/health/ready')) next()
     else{
-      logger.info(`[${req.headers.TxnId}] [${req.ip}] req.method req.originalUrl`);
+      logger.info(`[${req.headers.TxnId}] [${req.ip}] ${req.method} ${req.originalUrl}`);
       next();
       logger.trace(`[${req.headers.TxnId}] Sending Response`);
     }
