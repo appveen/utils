@@ -14,7 +14,7 @@ log4js.configure({
   categories: { default: { appenders: ['out'], level: logLevel.toUpperCase() } }
 });
 let version = require('../package.json').version;
-const loggerName = process.env.HOSTNAME ? `[${process.env.HOSTNAME}] [CACHE ${version}]` : `[CACHE ${version}]`;
+const loggerName = process.env.HOSTNAME ? `[${process.env.DATA_STACK_NAMESPACE}] [${process.env.HOSTNAME}] [CACHE ${version}]` : `[CACHE ${version}]`;
 let logger = log4js.getLogger(loggerName);
 let e = {};
 
