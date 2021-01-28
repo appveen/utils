@@ -13,7 +13,8 @@ log4js.configure({
   appenders: { out: { type: 'stdout', layout: { type: 'basic' } } },
   categories: { default: { appenders: ['out'], level: logLevel.toUpperCase() } }
 });
-const loggerName = process.env.HOSTNAME ? `[CACHE] [${process.env.HOSTNAME}]` : '[CACHE]';
+let version = require('../package.json').version;
+const loggerName = process.env.HOSTNAME ? `[${process.env.HOSTNAME}] [CACHE ${version}]` : `[CACHE ${version}]`;
 let logger = log4js.getLogger(loggerName);
 let e = {};
 
