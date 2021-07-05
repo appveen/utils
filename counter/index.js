@@ -1,4 +1,5 @@
 var mongoose = require("mongoose");
+var _ = require("lodash");
 var date = process.env.EXPIRE ? process.env.EXPIRE : new Date("3000-12-31");
 var counterSchema = new mongoose.Schema({
     _id: {
@@ -15,8 +16,8 @@ var counterSchema = new mongoose.Schema({
 counterSchema.index({
     expiresAt: 1
 }, {
-        expireAfterSeconds: 0
-    });
+    expireAfterSeconds: 0
+});
 var counterModel = mongoose.model("counter", counterSchema);
 var setDefaults = function (sequenceName, defaultValue) {
     if (!sequenceName) {
@@ -76,17 +77,23 @@ function generateId(prefix, counterName, suffix, padding, counter) {
     suffix = suffix ? suffix : "";
     let id = null;
     return new Promise((resolve, reject) => {
-        if (counter || counter === 0) {
+        try {
+            if (typeof counter == 'string') {
+                counter = parseInt(counter, 10);
+            }
+        } catch (e) {
+            counter = null;
+        }
+        if (typeof counter == 'number' && counter > -1) {
             getCount(counterName, null, function (err, doc) {
                 if (err) {
                     return reject(err);
                 }
-                let nextNo = padding ? Math.pow(10, padding) + doc.next : doc.next;
-                nextNo = nextNo.toString();
-                if (padding && parseInt(nextNo.substr(0, 1)) > 1) {
-                    return reject(new Error("length of _id is exceeding counter"));
+                if (padding) {
+                    id = prefix + _.padStart((doc.next + ''), padding, '0') + suffix;
+                } else {
+                    id = prefix + doc.next + suffix;
                 }
-                id = padding ? prefix + nextNo.substr(1) + suffix : prefix + nextNo + suffix;
                 return resolve(id);
             });
         } else if (padding) {
@@ -95,7 +102,7 @@ function generateId(prefix, counterName, suffix, padding, counter) {
         } else {
             getCount(counterName, null, function (err, doc) {
                 if (err) return reject(err);
-                id = prefix + doc.next
+                id = prefix + doc.next + suffix
                 resolve(id);
             });
         }
@@ -152,4 +159,3 @@ module.exports.getIdGenerator = getIdGenerator;
 module.exports.generateId = generateId;
 module.exports.getCount = getCount;
 module.exports.setDefaults = setDefaults;
-
