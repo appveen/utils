@@ -1,6 +1,6 @@
 {
   "name": "@appveen/utils",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "appveen utils library",
   "main": "index.js",
   "scripts": {
