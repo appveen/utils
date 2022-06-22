@@ -21,7 +21,7 @@
     "file-type": "^11.1.0",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.15",
-    "log4js": "^3.0.6",
+    "log4js": "^6.5.2",
     "mongoose": "^5.2.4",
     "read-chunk": "^3.2.0",
     "ioredis": "~4.17.3",
