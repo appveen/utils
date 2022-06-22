@@ -55,6 +55,7 @@ function vatidateFile(options, ext) {
     }
     let fileTypeObj = fileType(buffer);
     if (!fileTypeObj) return false;
+    if ((fileTypeObj.ext == 'jpg' || fileTypeObj.ext == 'jpeg') && (ext == 'jpg' || ext == 'jpeg')) return true;
     return fileTypeObj.ext == ext;
 }
 
