@@ -12,3 +12,7 @@ v1.2.8
 
 v1.2.9
 - Minor fix for cache scheduler interval
+
+v2.0.0
+- Created from v1.2.9
+- env vars renamed from REDIS_* to CACHE_*

@@ -1,6 +1,6 @@
 {
   "name": "@appveen/utils",
-  "version": "1.2.10",
+  "version": "2.1.6",
   "description": "appveen utils library",
   "main": "index.js",
   "scripts": {
@@ -19,15 +19,16 @@
   "dependencies": {
     "bluebird": "^3.5.3",
     "file-type": "^11.1.0",
+    "ioredis": "^5.0.4",
     "jsonwebtoken": "^8.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "log4js": "^6.5.2",
-    "mongoose": "^5.2.4",
+    "mongoose": "^5.13.14",
     "read-chunk": "^3.2.0",
     "ioredis": "~4.17.3",
     "request": "^2.83.0"
   },
   "devDependencies": {
-    "eslint": "^5.1.0"
+    "eslint": "^5.16.0"
   }
 }

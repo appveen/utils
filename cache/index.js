@@ -1,8 +1,7 @@
 const bluebird = require("bluebird");
 const redis = require("ioredis");
-bluebird.promisifyAll(redis);
-let host = process.env.REDIS_HOST;
-let port = process.env.REDIS_PORT;
+let host = process.env.CACHE_HOST;
+let port = process.env.CACHE_PORT;
 let client = null;
 let log4js = require('log4js');
 const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
@@ -13,7 +12,8 @@ log4js.configure({
   appenders: { out: { type: 'stdout', layout: { type: 'basic' } } },
   categories: { default: { appenders: ['out'], level: logLevel.toUpperCase() } }
 });
-const loggerName = process.env.HOSTNAME ? `[CACHE] [${process.env.HOSTNAME}]` : '[CACHE]';
+let version = require('../package.json').version;
+const loggerName = process.env.HOSTNAME ? `[${process.env.DATA_STACK_NAMESPACE}] [${process.env.HOSTNAME}] [CACHE ${version}]` : `[CACHE ${version}]`;
 let logger = log4js.getLogger(loggerName);
 let e = {};
 
@@ -24,7 +24,7 @@ function calculateExpirySeconds(expiry) {
 function getClusterNodes() {
   let nodes = [];
   //format: 127.0.0.1,127.0.0.2:8990 results in 127.0.0.1:6379 and 127.0.0.2:8990 respectively
-  let clusterNodes = process.env.REDIS_CLUSTER.split(',');
+  let clusterNodes = process.env.CACHE_CLUSTER.split(',');
   clusterNodes.map(node => {
     nodes.push({
       host: node.split(':')[0],
@@ -35,20 +35,20 @@ function getClusterNodes() {
 }
 
 e.init = () => {
-  if (process.env.REDIS_CLUSTER) {
-    logger.info('Connecting to redis cluster nodes :: ', JSON.stringify(getClusterNodes()));
+  if (process.env.CACHE_CLUSTER) {
+    logger.info('Connecting to cache cluster nodes :: ', JSON.stringify(getClusterNodes()));
     client = new redis.Cluster(getClusterNodes());
-  }
-  else {
-  	logger.info('Connecting to redis standalone server');
+  } else {
+    logger.info('Connecting to cache standalone server');
     client = redis.createClient(port, host);
   }
+  client = bluebird.promisifyAll(client);
   client.on('error', function (err) {
     logger.error(err.message);
   })
 
   client.on('connect', function () {
-    logger.info('Redis client connected');
+    logger.info('Cache client connected');
     setInterval(() => checkSessions(), 10000);
   });
 
@@ -228,7 +228,7 @@ function cleanupUsers(_user) {
 }
 
 e.isConnected = () => {
-	logger.trace(`Redis connection status : ${client.status}, ${client.status == 'ready'}`)
+  logger.trace(`Cache connection status : ${client.status}, ${client.status == 'ready'}`)
   return client.status == 'ready';
 }
 
