@@ -53,7 +53,7 @@ function vatidateFile(options, ext) {
         if (hex == 'EFBBBF')
             buffer = buffer.slice(3);
     }
-    let fileTypeObj = fileType(buffer);
+    let fileTypeObj = fileType.fromBuffer(buffer);
     if (!fileTypeObj) return false;
     if ((fileTypeObj.ext == 'jpg' || fileTypeObj.ext == 'jpeg') && (ext == 'jpg' || ext == 'jpeg')) return true;
     return fileTypeObj.ext == ext;
