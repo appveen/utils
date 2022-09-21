@@ -43,7 +43,7 @@ function validateOldMSOffice(options) {
     return hex == 'D0CF11E0A1B11AE1';
 }
 
-function vatidateFile(options, ext) {
+async function vatidateFile(options, ext) {
     if (textFormat.indexOf(ext) > -1) return true; //validateTextFormat(options);
     if (['doc', 'xls', 'ppt', 'msg'].indexOf(ext) > -1) return validateOldMSOffice(options);
     let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, 4100) : toArrayBuffer(options.data, 4100);
@@ -53,7 +53,7 @@ function vatidateFile(options, ext) {
         if (hex == 'EFBBBF')
             buffer = buffer.slice(3);
     }
-    let fileTypeObj = fileType.fromBuffer(buffer);
+    let fileTypeObj = await fileType.fromBuffer(buffer);
     if (!fileTypeObj) return false;
     if ((fileTypeObj.ext == 'jpg' || fileTypeObj.ext == 'jpeg') && (ext == 'jpg' || ext == 'jpeg')) return true;
     return fileTypeObj.ext == ext;
