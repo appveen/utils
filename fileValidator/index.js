@@ -46,7 +46,7 @@ function validateOldMSOffice(options) {
 function vatidateFile(options, ext) {
     if (textFormat.indexOf(ext) > -1) return true; //validateTextFormat(options);
     if (['doc', 'xls', 'ppt', 'msg'].indexOf(ext) > -1) return validateOldMSOffice(options);
-    let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, fileType.minimumBytes) : toArrayBuffer(options.data, fileType.minimumBytes);
+    let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, 4100) : toArrayBuffer(options.data, 4100);
     //remove BOM encoding
     if (ext == 'xml') {
         let hex = options.type == 'Binary' ? getHex(readChunk.sync(options.path, 0, 3), 3) : getHex(options.data, 3);
