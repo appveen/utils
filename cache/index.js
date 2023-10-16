@@ -3,16 +3,16 @@ const redis = require("ioredis");
 let host = process.env.CACHE_HOST;
 let port = process.env.CACHE_PORT;
 let client = null;
-let log4js = require('log4js');
-const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'info';
+let log4js = require("log4js");
+const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : "info";
 log4js.configure({
   levels: {
-    AUDIT: { value: Number.MAX_VALUE - 1, colour: 'yellow' }
+    AUDIT: { value: Number.MAX_VALUE - 1, colour: "yellow" }
   },
-  appenders: { out: { type: 'stdout', layout: { type: 'basic' } } },
-  categories: { default: { appenders: ['out'], level: logLevel.toUpperCase() } }
+  appenders: { out: { type: "stdout", layout: { type: "basic" } } },
+  categories: { default: { appenders: ["out"], level: logLevel.toUpperCase() } }
 });
-let version = require('../package.json').version;
+let version = require("../package.json").version;
 const loggerName = process.env.HOSTNAME ? `[${process.env.DATA_STACK_NAMESPACE}] [${process.env.HOSTNAME}] [CACHE ${version}]` : `[CACHE ${version}]`;
 let logger = log4js.getLogger(loggerName);
 let e = {};
@@ -24,39 +24,39 @@ function calculateExpirySeconds(expiry) {
 function getClusterNodes() {
   let nodes = [];
   //format: 127.0.0.1,127.0.0.2:8990 results in 127.0.0.1:6379 and 127.0.0.2:8990 respectively
-  let clusterNodes = process.env.CACHE_CLUSTER.split(',');
+  let clusterNodes = process.env.CACHE_CLUSTER.split(",");
   clusterNodes.map(node => {
     nodes.push({
-      host: node.split(':')[0],
-      port: node.split(':')[1] || '6379',
-    })
-  })
+      host: node.split(":")[0],
+      port: node.split(":")[1] || "6379",
+    });
+  });
   return nodes;
 }
 
 e.init = () => {
   if (process.env.CACHE_CLUSTER) {
-    logger.info('Connecting to cache cluster nodes :: ', JSON.stringify(getClusterNodes()));
+    logger.info("Connecting to cache cluster nodes :: ", JSON.stringify(getClusterNodes()));
     client = new redis.Cluster(getClusterNodes());
   } else {
-    logger.info('Connecting to cache standalone server');
+    logger.info("Connecting to cache standalone server");
     client = redis.createClient(port, host);
   }
   client = bluebird.promisifyAll(client);
-  client.on('error', function (err) {
+  client.on("error", function (err) {
     logger.error(err.message);
-  })
+  });
 
-  client.on('connect', function () {
-    logger.info('Cache client connected');
+  client.on("connect", function () {
+    logger.info("Cache client connected");
     setInterval(() => checkSessions(), 10000);
   });
 
-}
+};
 
 e.uuid = (a) => {
-  return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, e.uuid)
-}
+  return a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, e.uuid);
+};
 
 e.addUser = (_uid, _token, _singleLogin) => {
   logger.trace("Inside ::  addUser()");
@@ -66,12 +66,12 @@ e.addUser = (_uid, _token, _singleLogin) => {
   _uid = `ODP:${_uid}`;
   if (_singleLogin) return client.setAsync(_uid, _token);
   else return client.saddAsync(_uid, _token);
-}
+};
 
 e.checkUser = (_uid) => {
   _uid = `ODP:${_uid}`;
   return client.existsAsync(_uid).then(_d => _d == 1);
-}
+};
 
 e.removeUser = (_uid) => {
   logger.trace("Inside ::  removeUser()");
@@ -82,18 +82,18 @@ e.removeUser = (_uid) => {
       if (_type == "string") {
         return client.getAsync(_uid)
           .then(_token => e.blacklist(_token))
-          .then(() => client.delAsync(_uid))
+          .then(() => client.delAsync(_uid));
       } else {
         return client.smembersAsync(_uid)
           .then(_tokens => {
             _tokens.forEach(_token => {
               client.sremAsync(_uid, _token)
-                .then(() => e.blacklist(_token))
-            })
-          })
+                .then(() => e.blacklist(_token));
+            });
+          });
       }
-    })
-}
+    });
+};
 
 e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   logger.trace("Inside ::  addToken()");
@@ -105,10 +105,10 @@ e.addToken = (_token, _default, _uuidOfUI, _expiry, _uiHeartbeatInterval) => {
   logger.trace(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return client.saddAsync("t:" + _token, _uuidOfUI)
     .then(() => {
-      if (_default) client.saddAsync("t:" + _token, "DUMMY")
+      if (_default) client.saddAsync("t:" + _token, "DUMMY");
     })
     .then(() => e.addUISessions(_uuidOfUI, _token, _uiHeartbeatInterval))
-    .then(() => client.expireAsync("t:" + _token, calculateExpirySeconds(_expiry)))
+    .then(() => client.expireAsync("t:" + _token, calculateExpirySeconds(_expiry)));
 };
 
 e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogin, _uiHeartbeatInterval, _extend) => {
@@ -135,8 +135,8 @@ e.refreshToken = (_uid, _tokenOld, _tokenNew, _uuidOfUI, _expiryNew, _singleLogi
     .then(() => client.expireAsync("t:" + _tokenNew, calculateExpirySeconds(_expiryNew)))
     .then(() => {
       if (_extend && _singleLogin)
-        return e.blacklist(_tokenOld)
-    })
+        return e.blacklist(_tokenOld);
+    });
 };
 
 e.addUISessions = (_uuidOfUI, _token, _uiHeartbeatInterval) => {
@@ -155,7 +155,7 @@ e.handleHeartBeat = (_uuidOfUI, _token, _uiHeartbeatInterval) => {
   logger.trace(`uiHeartbeatInterval :: ${_uiHeartbeatInterval}`);
   return client.setAsync(_uuidOfUI, _token)
     .then(() => client.expireAsync(_uuidOfUI, _uiHeartbeatInterval));
-}
+};
 
 e.showUISessions = (_token) => {
   logger.trace("Inside ::  showUISessions()");
@@ -174,14 +174,14 @@ e.blacklist = (_token) => {
   return client.saddAsync("b:" + _token, _token)
     .then(() => client.ttlAsync("t:" + _token))
     .then(_expiry => client.expireAsync("b:" + _token, _expiry))
-    .then(() => client.delAsync("t:" + _token))
+    .then(() => client.delAsync("t:" + _token));
 };
 
 function checkSessions() {
   client.keysAsync("t:*")
-    .then(_tokens => _tokens.forEach(_t => cleanup(_t)))
+    .then(_tokens => _tokens.forEach(_t => cleanup(_t)));
   client.keysAsync("ODP:*")
-    .then(_users => _users.forEach(_u => cleanupUsers(_u)))
+    .then(_users => _users.forEach(_u => cleanupUsers(_u)));
 }
 
 function cleanup(_t) {
@@ -193,8 +193,8 @@ function cleanup(_t) {
             .then(_d => {
               if (_d == 0) client.sremAsync(_t, _k);
             });
-      })
-    })
+      });
+    });
 }
 
 function cleanupUsers(_user) {
@@ -207,7 +207,7 @@ function cleanupUsers(_user) {
             if (_d == 0) {
               client.getAsync(_user)
                 .then(_token => e.blacklist(_token))
-                .then(() => client.delAsync(_user))
+                .then(() => client.delAsync(_user));
             }
           });
       } else {
@@ -218,18 +218,18 @@ function cleanupUsers(_user) {
                 .then(_d => {
                   if (_d == 0) {
                     client.sremAsync(_user, _token)
-                      .then(() => e.blacklist(_token))
+                      .then(() => e.blacklist(_token));
                   }
                 });
-            })
-          })
+            });
+          });
       }
-    })
+    });
 }
 
 e.isConnected = () => {
-  logger.trace(`Cache connection status : ${client.status}, ${client.status == 'ready'}`)
-  return client.status == 'ready';
-}
+  logger.trace(`Cache connection status : ${client.status}, ${client.status == "ready"}`);
+  return client.status == "ready";
+};
 
 module.exports = e;
