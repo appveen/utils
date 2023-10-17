@@ -19,7 +19,7 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "file-type": "^11.1.0",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "log4js": "^6.5.2",
     "mongoose": "^6.5.2",
