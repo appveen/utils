@@ -17,10 +17,8 @@
   },
   "homepage": "https://github.com/appveen/utils.git#readme",
   "dependencies": {
-    "audit": "^0.0.6",
     "bluebird": "^3.7.2",
     "file-type": "^11.1.0",
-    "fix": "^0.0.6",
     "ioredis": "~4.17.3",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
