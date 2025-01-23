@@ -22,10 +22,11 @@
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "log4js": "^6.5.2",
-    "mongoose": "^6.5.2",
+    "mongoose": "^8.9.5",
     "read-chunk": "^3.2.0",
     "ioredis": "~4.17.3",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "mongodb": "^6.0.0"
   },
   "devDependencies": {
     "eslint": "^5.1.0"
