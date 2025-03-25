@@ -1,4 +1,4 @@
-const request = require("request");
+const axios = require("axios");
 
 function isUrlPermitted(permittedUrls, originalUrl) {
     let permitted = false;
@@ -14,8 +14,6 @@ function isUrlPermitted(permittedUrls, originalUrl) {
 
 function validateJWT(url, req) {
     var options = {
-        url: url,
-        method: "GET",
         headers: {
             "Content-Type": "application/json",
             "TxnId": req.get('txnId'),
@@ -24,19 +22,23 @@ function validateJWT(url, req) {
         json: true
     };
     return new Promise((resolve, reject) => {
-        request.get(options, function (err, res, body) {
-            if (err) {
-                logger.error("Error requesting user Managment");
-                reject(err);
-            } else if (!res) {
-                reject(new Error("User management service Down"));
-            } else {
-                if (res.statusCode == 200) resolve(body);
-                else {
-                    reject(new Error(JSON.stringify(body)));
+        axios.get(url, { ...options })
+            .then(response => {
+                resolve(response.data);
+            })
+            .catch(error => {
+                logger.error("Error requesting User Management");
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    reject(new Error(JSON.stringify(error.response.data)));
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    reject(new Error("User management service Down"));
+                } else {
+                    // Something happened in setting up the request
+                    reject(error);
                 }
-            }
-        });
+            });
     });
 }
 
