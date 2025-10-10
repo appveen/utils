@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('@datanimbus/mongoose');
 
 function logToMongo(name) {
 
