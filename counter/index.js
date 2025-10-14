@@ -1,4 +1,4 @@
-var mongoose = require("mongoose");
+var mongoose = require("@datanimbus/mongoose");
 var date = process.env.EXPIRE ? process.env.EXPIRE : new Date("3000-12-31");
 var counterSchema = new mongoose.Schema({
     _id: {
