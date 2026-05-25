@@ -1,6 +1,6 @@
 
 const readChunk = require('read-chunk');
-const fileType = require('file-type');
+const { fileTypeFromBuffer, reasonableDetectionSizeInBytes } = require('file-type');
 const textFormat = ['csv', 'txt', 'html', 'htm', 'css', 'ini', 'json', 'tsv', 'xml', 'yaml', 'yml', 'rst', 'md'];
 
 function toArrayBuffer(buf, length) {
@@ -43,17 +43,17 @@ function validateOldMSOffice(options) {
     return hex == 'D0CF11E0A1B11AE1';
 }
 
-function vatidateFile(options, ext) {
+async function vatidateFile(options, ext) {
     if (textFormat.indexOf(ext) > -1) return true; //validateTextFormat(options);
     if (['doc', 'xls', 'ppt', 'msg'].indexOf(ext) > -1) return validateOldMSOffice(options);
-    let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, fileType.minimumBytes) : toArrayBuffer(options.data, fileType.minimumBytes);
+    let buffer = options.type == 'Binary' ? readChunk.sync(options.path, 0, reasonableDetectionSizeInBytes) : toArrayBuffer(options.data, reasonableDetectionSizeInBytes);
     //remove BOM encoding
     if (ext == 'xml') {
         let hex = options.type == 'Binary' ? getHex(readChunk.sync(options.path, 0, 3), 3) : getHex(options.data, 3);
         if (hex == 'EFBBBF')
             buffer = buffer.slice(3);
     }
-    let fileTypeObj = fileType(buffer);
+    let fileTypeObj = await fileTypeFromBuffer(buffer);
     if (!fileTypeObj) return false;
     if ((fileTypeObj.ext == 'jpg' || fileTypeObj.ext == 'jpeg') && (ext == 'jpg' || ext == 'jpeg')) return true;
     return fileTypeObj.ext == ext;
