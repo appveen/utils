@@ -22,7 +22,7 @@
     "ioredis": "^5.0.4",
     "lodash": "^4.17.21",
     "log4js": "^6.5.2",
-    "mongoose": "^6.5.1",
+    "mongoose": "^8.9.0",
     "read-chunk": "^3.2.0"
   },
   "devDependencies": {
