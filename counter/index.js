@@ -28,78 +28,62 @@ var setDefaults = function (sequenceName, defaultValue) {
         next: defaultValue
     }).then(() => { }, () => { });
 };
+// Increments the counter and resolves with the updated counter document.
+// The optional callback is still honoured for existing callers; the promise is always returned.
 var getCount = function (sequenceName, expire, callback) {
     var options = {};
     if (!expire) {
         expire = date;
     }
-    options.new = true;
+    options.returnDocument = "after";
     options.upsert = true;
     options.setDefaultsOnInsert = true;
-    counterModel.findByIdAndUpdate(sequenceName, {
+    var promise = counterModel.findByIdAndUpdate(sequenceName, {
         $inc: {
             next: 1
         },
         $set: {
             expiresAt: expire
         }
-    }, options, callback);
+    }, options).exec();
+    if (typeof callback === "function") {
+        promise.then(function (doc) { callback(null, doc); }, function (err) { callback(err); });
+    }
+    return promise;
 };
 
+// The returned function is a Mongoose pre hook. Mongoose 9 does not pass next() to pre hooks, so it is async;
+// async hooks work the same way on Mongoose 6, 7 and 8.
 function getIdGenerator(prefix, counterName, suffix, padding, counter) {
     if (counter || counter === 0) {
         counter = parseInt(counter, 10);
         setDefaults(counterName, counter);
     }
-    return function (next) {
-        var self = this;
-        var mid = null;
+    return async function () {
         prefix = prefix ? prefix : "";
         suffix = suffix ? suffix : "";
-        if (!self._id) {
-            generateId(prefix, counterName, suffix, padding, counter)
-                .then(id => {
-                    self._id = id;
-                    next();
-                })
-                .catch(err => {
-                    next(err);
-                })
-        } else {
-            next();
+        if (!this._id) {
+            this._id = await generateId(prefix, counterName, suffix, padding, counter);
         }
     };
 }
 
-function generateId(prefix, counterName, suffix, padding, counter) {
+async function generateId(prefix, counterName, suffix, padding, counter) {
     prefix = prefix ? prefix : "";
     suffix = suffix ? suffix : "";
-    let id = null;
-    return new Promise((resolve, reject) => {
-        if (counter || counter === 0) {
-            getCount(counterName, null, function (err, doc) {
-                if (err) {
-                    return reject(err);
-                }
-                let nextNo = padding ? Math.pow(10, padding) + doc.next : doc.next;
-                nextNo = nextNo.toString();
-                if (padding && parseInt(nextNo.substr(0, 1)) > 1) {
-                    return reject(new Error("length of _id is exceeding counter"));
-                }
-                id = padding ? prefix + nextNo.substr(1) + suffix : prefix + nextNo + suffix;
-                return resolve(id);
-            });
-        } else if (padding) {
-            id = prefix + rand(padding) + suffix;
-            resolve(id)
-        } else {
-            getCount(counterName, null, function (err, doc) {
-                if (err) return reject(err);
-                id = prefix + doc.next
-                resolve(id);
-            });
+    if (counter || counter === 0) {
+        const doc = await getCount(counterName, null);
+        let nextNo = padding ? Math.pow(10, padding) + doc.next : doc.next;
+        nextNo = nextNo.toString();
+        if (padding && parseInt(nextNo.substr(0, 1)) > 1) {
+            throw new Error("length of _id is exceeding counter");
         }
-    })
+        return padding ? prefix + nextNo.substr(1) + suffix : prefix + nextNo + suffix;
+    } else if (padding) {
+        return prefix + rand(padding) + suffix;
+    }
+    const doc = await getCount(counterName, null);
+    return prefix + doc.next;
 }
 
 function rand(_i) {
@@ -109,42 +93,22 @@ function rand(_i) {
 };
 
 function transactionIdGenerator() {
-    return function (next) {
-        var self = this;
-        var date = new Date();
-        date.setDate(date.getDate() + 1);
-        if (!self._id) {
-            getCount("universalTransactionId" + date.getDate(), date, function (err, doc) {
-                var count = 1000000;
-                count += doc.next;
-                date.setDate(date.getDate() - 1);
-                self._id = count.toString() + date.getTime();
-                next();
-            });
-        } else {
-            next();
+    return async function () {
+        if (!this._id) {
+            var date = new Date();
+            date.setDate(date.getDate() + 1);
+            const doc = await getCount("universalTransactionId" + date.getDate(), date);
+            var count = 1000000;
+            count += doc.next;
+            date.setDate(date.getDate() - 1);
+            this._id = count.toString() + date.getTime();
         }
     };
 }
 
+// Was a parallel (next, done) hook. Mongoose 9 has no parallel hooks, so it now runs like transactionIdGenerator.
 function transactionIdGeneratorParallel() {
-    return function (next, done) {
-        var self = this;
-        var date = new Date();
-        date.setDate(date.getDate() + 1);
-        if (!self._id) {
-            getCount("universalTransactionId" + date.getDate(), date, function (err, doc) {
-                var count = 1000000;
-                count += doc.next;
-                date.setDate(date.getDate() - 1);
-                self._id = count.toString() + date.getTime();
-                done();
-            });
-        } else {
-            done();
-        }
-        next();
-    };
+    return transactionIdGenerator();
 }
 module.exports.transactionIdGeneratorParallel = transactionIdGeneratorParallel;
 module.exports.transactionIdGenerator = transactionIdGenerator;

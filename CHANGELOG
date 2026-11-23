@@ -16,3 +16,11 @@ v1.2.9
 v2.0.0
 - Created from v1.2.9
 - env vars renamed from REDIS_* to CACHE_*
+
+Unreleased
+- Mongoose 7, 8 and 9 support (still works on Mongoose 6.5.1+):
+  - counter.getIdGenerator, transactionIdGenerator and transactionIdGeneratorParallel return async pre hooks (Mongoose 9 no longer passes next()). transactionIdGeneratorParallel no longer runs in parallel.
+  - counter.getCount returns a promise and no longer passes a callback to findByIdAndUpdate (removed in Mongoose 7). The optional callback argument still works.
+  - counter.generateId is an async function (same resolved value).
+  - logToMongo uses collection.insertOne (collection.insert was removed from the MongoDB driver).
+  - mongoose moves from dependencies to peerDependencies so the application and this package share one Mongoose instance. A second copy would register the counter model on a connection that is never opened.
