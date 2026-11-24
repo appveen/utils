@@ -3,6 +3,21 @@
   "version": "2.3.0",
   "description": "appveen utils library",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "CHANGELOG",
+    "IDGenerator/",
+    "cache/",
+    "counter/",
+    "date/",
+    "fileValidator/",
+    "logMiddleware/",
+    "logToMongo/",
+    "logger/",
+    "objectUtils/",
+    "rand/",
+    "schemaUtils/"
+  ],
   "scripts": {
     "test": "node --test"
   },
