@@ -10,7 +10,7 @@ function logToMongo(name) {
             let diff = end - start;
             let headers = JSON.parse(JSON.stringify(req.headers));
             headers.authorization = "JWT *************************";
-            mongoDB.insert({
+            mongoDB.insertOne({
                 name: name,
                 url: req.originalUrl,
                 method: req.method,
@@ -22,7 +22,7 @@ function logToMongo(name) {
                 source: req.connection.remoteAddress,
                 completionTime: diff,
                 _metadata: { 'deleted': false }
-            });
+            }).catch(function () { /* logging must never break the request */ });
         });
         next();
     };
